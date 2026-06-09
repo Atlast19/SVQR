@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/roles")
 public class RolController {
 
     private final IRolService rolService;
@@ -18,7 +18,7 @@ public class RolController {
         this.rolService = rolService;
     }
 
-    @GetMapping
+    @GetMapping("/GetAllRoles")
     public ResponseEntity<List<RolResponse>> obtenerTodos() {
 
         return ResponseEntity.ok(
@@ -26,7 +26,7 @@ public class RolController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/GetRolesById/{id}")
     public ResponseEntity<RolResponse> obtenerPorId(
             @PathVariable Integer id) {
 
@@ -44,7 +44,7 @@ public class RolController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/CreateRoles")
     public ResponseEntity<Rol> guardar(
             @RequestBody Rol rol) {
 
