@@ -30,8 +30,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/GetUsuarioById/{id}")
-    public ResponseEntity<UsuarioResponse> obtenerPorId(
-            @PathVariable Integer id) {
+    public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable Integer id) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorId(id)
@@ -39,8 +38,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/Email/{email}")
-    public ResponseEntity<UsuarioResponse> obtenerPorEmail(
-            @PathVariable String email) {
+    public ResponseEntity<UsuarioResponse> obtenerPorEmail(@PathVariable String email) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorEmail(email)
@@ -48,8 +46,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/Matricula/{matricula}")
-    public ResponseEntity<UsuarioResponse> obtenerPorMatricula(
-            @PathVariable String matricula) {
+    public ResponseEntity<UsuarioResponse> obtenerPorMatricula(@PathVariable String matricula) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorMatricula(matricula)
@@ -57,17 +54,14 @@ public class UsuarioController {
     }
 
     @PostMapping("/CreateUsuarios")
-    public ResponseEntity<UsuarioResponse> crearUsuario(
-            @RequestBody UsuarioRequest request) {
+    public ResponseEntity<UsuarioResponse> crearUsuario(@RequestBody UsuarioRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuarioService.crearUsuario(request));
     }
 
     @PutMapping("/UpdateUsuarioById/{id}")
-    public ResponseEntity<UsuarioResponse> actualizarUsuario(
-            @PathVariable Integer id,
-            @RequestBody UsuarioUpdateRequest request) {
+    public ResponseEntity<UsuarioResponse> actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioUpdateRequest request) {
 
         return ResponseEntity.ok(
                 usuarioService.actualizarUsuario(id, request)
@@ -75,8 +69,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/DeleteUsuario/{id}")
-    public ResponseEntity<Void> eliminarUsuario(
-            @PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
 
         usuarioService.eliminar(id);
 

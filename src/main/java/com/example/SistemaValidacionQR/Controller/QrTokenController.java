@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/qr")
+@RequestMapping("/qr")
 public class QrTokenController {
     private final IQrTokenService qrTokenService;
 
@@ -19,8 +19,7 @@ public class QrTokenController {
     }
 
     @PostMapping("/generar/{usuarioId}")
-    public ResponseEntity<GenerarQrResponse> generarQr(
-            @PathVariable Integer usuarioId) {
+    public ResponseEntity<GenerarQrResponse> generarQr(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(
                 qrTokenService.generarQrToken(usuarioId)
@@ -28,8 +27,7 @@ public class QrTokenController {
     }
 
     @GetMapping("/validar")
-    public ResponseEntity<QrValidationResponse> validarQr(
-            @RequestParam String token) {
+    public ResponseEntity<QrValidationResponse> validarQr(@RequestParam String token) {
 
         return ResponseEntity.ok(
                 qrTokenService.validarQrToken(token)
@@ -37,20 +35,15 @@ public class QrTokenController {
     }
 
     @PostMapping("/revocar/{tokenId}")
-    public ResponseEntity<String> revocarQr(
-            @PathVariable Integer tokenId) {
+    public ResponseEntity<String> revocarQr(@PathVariable Integer tokenId) {
 
         qrTokenService.revocarToken(tokenId);
 
-        return ResponseEntity.ok(
-                "QR revocado correctamente"
-        );
+        return ResponseEntity.ok("QR revocado correctamente");
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<QrTokenResponse>>
-    obtenerTokensPorUsuario(
-            @PathVariable Integer usuarioId) {
+    public ResponseEntity<List<QrTokenResponse>> obtenerTokensPorUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(
                 qrTokenService.obtenerTokensPorUsuario(

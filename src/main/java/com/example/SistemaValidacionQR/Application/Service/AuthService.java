@@ -5,7 +5,7 @@ import com.example.SistemaValidacionQR.Application.Dto.Auth.AuthResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IAuthService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
-import com.example.SistemaValidacionQR.Security.CustomUserDetailsService;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import com.example.SistemaValidacionQR.Security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +33,6 @@ public class AuthService implements IAuthService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
-
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -45,6 +44,12 @@ public class AuthService implements IAuthService {
                 .findByEmail(request.getEmail())
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
+
+        System.out.println("Estado del usuario: " + usuario.getEstado());
+
+        if (usuario.getEstado() == EstadoGenerico.INACTIVO) {
+            throw new RuntimeException("El usuario se encuentra inactivo");
+        }
 
         UserDetails userDetails =
                 customUserDetailsService

@@ -13,9 +13,9 @@ public interface IRolService {
 
     List<RolResponse> obtenerTodos();
 
-    Rol guardar(Rol rol);
+    RolResponse guardar(Rol rol);
 
-    Rol actualizar(Integer id, Rol rol);
+    RolResponse actualizar(Integer id, Rol rol);
 
     void eliminar(Integer id);
 }

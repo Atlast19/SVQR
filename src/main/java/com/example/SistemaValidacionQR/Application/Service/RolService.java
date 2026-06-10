@@ -4,8 +4,10 @@ import com.example.SistemaValidacionQR.Application.Dto.Rol.RolResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IRolService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
 import com.example.SistemaValidacionQR.Domein.Interfaces.IRolRepository;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,41 +44,65 @@ public class RolService implements IRolService {
 
         return rolRepository.findAll()
                 .stream()
+                .filter(roles -> roles.getEstado() == EstadoGenerico.ACTIVO)
                 .map(this::mapToResponse)
                 .toList();
     }
 
     @Override
-    public Rol guardar(Rol rol) {
+    public RolResponse guardar(Rol rol) {
 
         if (rolRepository.existsByNombre(rol.getNombre())) {
             throw new RuntimeException("Ya existe un rol con ese nombre");
         }
 
-        return rolRepository.save(rol);
+        rol.setEstado(EstadoGenerico.ACTIVO);
+
+        Rol rolGuardado = rolRepository.save(rol);
+
+        RolResponse response = new RolResponse();
+
+        response.setId(rolGuardado.getId());
+        response.setNombre(rolGuardado.getNombre());
+        response.setDescripcion(rolGuardado.getDescripcion());
+        response.setEstado(rolGuardado.getEstado());
+
+
+        return response;
     }
 
     @Override
-    public Rol actualizar(Integer id, Rol rolActualizado) {
+    public RolResponse actualizar(Integer id, Rol rolActualizado) {
 
         Rol rol = rolRepository.findById(id)
+                .filter(roles -> roles.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Rol no encontrado"));
 
         rol.setNombre(rolActualizado.getNombre());
         rol.setDescripcion(rolActualizado.getDescripcion());
 
-        return rolRepository.save(rol);
+        Rol rolActualizados = rolRepository.save(rol);
+
+        return mapToResponse(rolActualizados);
+
+
+
+
     }
 
     @Override
     public void eliminar(Integer id) {
 
         Rol rol = rolRepository.findById(id)
+                .filter(roles -> roles.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Rol no encontrado"));
 
-        rolRepository.delete(rol);
+        rol.setEstado(EstadoGenerico.INACTIVO);
+        rol.setUpdatedAt(LocalDateTime.now());
+
+        rolRepository.save(rol);
     }
 
     private RolResponse mapToResponse(Rol rol) {

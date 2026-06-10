@@ -1,5 +1,6 @@
 package com.example.SistemaValidacionQR.Domein.Entitys;
 
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,15 @@ public class Rol {
     @Column(length = 255)
     private String descripcion;
 
+    @Column(name = "CreatedAt", insertable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "UpdatedAt", insertable = false, updatable = false)
+    private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Estado",nullable = false)
+    private EstadoGenerico estado;
 
     @OneToMany
     private List<Usuario> usuarios;

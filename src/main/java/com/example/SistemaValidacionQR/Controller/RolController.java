@@ -27,8 +27,7 @@ public class RolController {
     }
 
     @GetMapping("/GetRolesById/{id}")
-    public ResponseEntity<RolResponse> obtenerPorId(
-            @PathVariable Integer id) {
+    public ResponseEntity<RolResponse> obtenerPorId(@PathVariable Integer id) {
 
         return ResponseEntity.ok(
                 rolService.obtenerPorId(id)
@@ -36,8 +35,7 @@ public class RolController {
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<RolResponse> obtenerPorNombre(
-            @PathVariable String nombre) {
+    public ResponseEntity<RolResponse> obtenerPorNombre(@PathVariable String nombre) {
 
         return ResponseEntity.ok(
                 rolService.obtenerPorNombre(nombre)
@@ -45,27 +43,23 @@ public class RolController {
     }
 
     @PostMapping("/CreateRoles")
-    public ResponseEntity<Rol> guardar(
-            @RequestBody Rol rol) {
+    public ResponseEntity<RolResponse> guardar(@RequestBody Rol rol) {
 
         return ResponseEntity.ok(
                 rolService.guardar(rol)
         );
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Rol> actualizar(
-            @PathVariable Integer id,
-            @RequestBody Rol rol) {
+    @PutMapping("/UpdateRoles/{id}")
+    public ResponseEntity<RolResponse> actualizar(@PathVariable Integer id, @RequestBody Rol rol) {
 
         return ResponseEntity.ok(
                 rolService.actualizar(id, rol)
         );
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Integer id) {
+    @DeleteMapping("/DeleteRoles/{id}")
+    public ResponseEntity<Void> eliminar (@PathVariable Integer id) {
 
         rolService.eliminar(id);
 

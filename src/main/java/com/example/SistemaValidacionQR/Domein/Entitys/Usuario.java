@@ -1,6 +1,6 @@
 package com.example.SistemaValidacionQR.Domein.Entitys;
 
-import com.example.SistemaValidacionQR.Domein.enums.EstadoUsuario;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +34,7 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Estado",nullable = false)
-    private EstadoUsuario estado;
+    private EstadoGenerico estado;
 
     @Column(name = "UltimoAcceso")
     private LocalDateTime ultimoAcceso;

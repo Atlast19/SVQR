@@ -9,7 +9,7 @@ import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Interfaces.IRolRepository;
 import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
-import com.example.SistemaValidacionQR.Domein.enums.EstadoUsuario;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +35,7 @@ public class UsuarioService implements IUsuarioService {
 
         return usuarioRepository.findAll()
                 .stream()
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -43,6 +44,7 @@ public class UsuarioService implements IUsuarioService {
     public UsuarioResponse obtenerPorId(Integer id) {
 
         Usuario usuario = usuarioRepository.findById(id)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
@@ -53,6 +55,7 @@ public class UsuarioService implements IUsuarioService {
     public UsuarioResponse obtenerPorEmail(String email) {
 
         Usuario usuario = usuarioRepository.findByEmail(email)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
@@ -63,6 +66,7 @@ public class UsuarioService implements IUsuarioService {
     public UsuarioResponse obtenerPorMatricula(String matricula) {
 
         Usuario usuario = usuarioRepository.findByMatricula(matricula)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
@@ -80,7 +84,7 @@ public class UsuarioService implements IUsuarioService {
             throw new RuntimeException("La matrícula ya existe");
         }
 
-        Rol rol = rolRepository.findById(2).orElseThrow(() ->
+        Rol rol = rolRepository.findById(3).orElseThrow(() ->
                         new RuntimeException("Rol no encontrado"));
 
         Usuario usuario = new Usuario();
@@ -92,7 +96,7 @@ public class UsuarioService implements IUsuarioService {
 
         usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
-        usuario.setEstado(EstadoUsuario.ACTIVO);
+        usuario.setEstado(EstadoGenerico.ACTIVO);
 
         usuario.setCreatedAt(LocalDateTime.now());
         usuario.setUpdatedAt(LocalDateTime.now());
@@ -108,6 +112,7 @@ public class UsuarioService implements IUsuarioService {
     public UsuarioResponse actualizarUsuario(Integer id, UsuarioUpdateRequest request) {
 
         Usuario usuario = usuarioRepository.findById(id)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
@@ -130,8 +135,7 @@ public class UsuarioService implements IUsuarioService {
 
         usuario.setUpdatedAt(LocalDateTime.now());
 
-        Usuario usuarioActualizado =
-                usuarioRepository.save(usuario);
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
 
         return mapToResponse(usuarioActualizado);
     }
@@ -140,10 +144,14 @@ public class UsuarioService implements IUsuarioService {
     public void eliminar(Integer id) {
 
         Usuario usuario = usuarioRepository.findById(id)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
-        usuarioRepository.delete(usuario);
+        usuario.setEstado(EstadoGenerico.INACTIVO);
+        usuario.setUpdatedAt(LocalDateTime.now());
+
+        usuarioRepository.save(usuario);
     }
 
     private UsuarioResponse mapToResponse(Usuario usuario) {
