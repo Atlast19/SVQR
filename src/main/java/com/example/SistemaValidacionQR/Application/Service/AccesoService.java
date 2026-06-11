@@ -5,10 +5,12 @@ import com.example.SistemaValidacionQR.Application.Inferfaces.IAccesoService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Acceso;
 import com.example.SistemaValidacionQR.Domein.Entitys.QrToken;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IAccesoRepository;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IQrTokenRepository;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IAccesoRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IQrTokenRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoAcceso;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,46 +19,57 @@ import java.util.List;
 public class AccesoService implements IAccesoService {
 
     private final IAccesoRepository accesoRepository;
-    private final IUsuarioRepository usuarioRepository;
     private final IQrTokenRepository qrTokenRepository;
 
-    public AccesoService(IAccesoRepository accesoRepository, IUsuarioRepository usuarioRepository, IQrTokenRepository qrTokenRepository) {
+    public AccesoService(IAccesoRepository accesoRepository, IQrTokenRepository qrTokenRepository) {
         this.accesoRepository = accesoRepository;
-        this.usuarioRepository = usuarioRepository;
+
         this.qrTokenRepository = qrTokenRepository;
     }
 
     @Override
-    public AccesoResponse registrarAcceso(
-            Integer usuarioId,
-            Integer qrTokenId,
-            String ip,
-            String dispositivo) {
+    public AccesoResponse registrarAcceso(String token, HttpServletRequest request) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
-
-        QrToken qrToken = qrTokenRepository.findById(qrTokenId)
+        QrToken qrToken = qrTokenRepository
+                .findByToken(token)
+                .filter(qrTokens -> !qrTokens.getRevocado())
+                .filter(qrTokens -> !qrTokens.getUsado())
                 .orElseThrow(() ->
                         new RuntimeException("QR no encontrado"));
+
+        Usuario usuario = qrToken.getUsuario();
+
+
+        String ip = request.getRemoteAddr();
+
+        String dispositivo = request.getHeader("User-Agent");
 
         Acceso acceso = new Acceso();
 
         acceso.setUsuario(usuario);
         acceso.setQrToken(qrToken);
+        acceso.setMatricula(usuario.getMatricula());
         acceso.setIpAddress(ip);
         acceso.setDispositivo(dispositivo);
         acceso.setFechaAcceso(LocalDateTime.now());
         acceso.setEstado(EstadoAcceso.APROBADO);
 
-        qrToken.setUsado(true);
-        qrTokenRepository.save(qrToken);
+        accesoRepository.save(acceso);
 
-        Acceso accesoGuardado =
-                accesoRepository.save(acceso);
+        AccesoResponse response =
+                new AccesoResponse();
 
-        return mapToResponse(accesoGuardado);
+        response.setId(acceso.getId());
+        response.setUsuarioId(usuario.getId());
+        response.setMatricula(usuario.getMatricula());
+        response.setFechaAcceso(acceso.getFechaAcceso());
+        response.setMatricula(acceso.getMatricula());
+        response.setIpAddress(acceso.getIpAddress());
+        response.setDispositivo(acceso.getDispositivo());
+        response.setEstado(acceso.getEstado());
+
+
+        return response;
     }
 
     @Override
@@ -69,8 +82,7 @@ public class AccesoService implements IAccesoService {
     }
 
     @Override
-    public List<AccesoResponse> obtenerHistorialUsuario(
-            Integer usuarioId) {
+    public List<AccesoResponse> obtenerHistorialUsuario(Integer usuarioId) {
 
         return accesoRepository.findByUsuarioId(usuarioId)
                 .stream()
@@ -78,13 +90,14 @@ public class AccesoService implements IAccesoService {
                 .toList();
     }
 
-    private AccesoResponse mapToResponse(
-            Acceso acceso) {
+    private AccesoResponse mapToResponse(Acceso acceso) {
 
         AccesoResponse response =
                 new AccesoResponse();
 
-        response.setId(acceso.getId());
+        response.setId(
+                acceso.getId()
+        );
 
         response.setMatricula(
                 acceso.getUsuario().getMatricula()
@@ -101,7 +114,7 @@ public class AccesoService implements IAccesoService {
         );
 
         response.setEstado(
-                acceso.getEstado().name()
+                EstadoAcceso.valueOf(acceso.getEstado().name())
         );
 
         response.setIpAddress(

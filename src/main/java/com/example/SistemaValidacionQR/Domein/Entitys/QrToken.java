@@ -21,6 +21,9 @@ public class QrToken {
     @Column(nullable = false, unique = true, length = 500)
     private String token;
 
+    @Column(name = "Matricula",nullable = false, unique = true, length = 20)
+    private  String matricula;
+
     @Column(nullable = false)
     private LocalDateTime fechaExpiracion;
 
@@ -30,7 +33,11 @@ public class QrToken {
     @Column(nullable = false)
     private Boolean usado;
 
+    @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
+
+    @Column(name = "UpdatedAt")
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "UsuarioId", nullable = false)

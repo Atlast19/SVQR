@@ -34,6 +34,9 @@ public class Acceso {
     @JoinColumn(name = "UsuarioId", nullable = false)
     private Usuario usuario;
 
+    @Column(name = "Matricula",nullable = false, unique = true, length = 20)
+    private  String matricula;
+
     @ManyToOne
     @JoinColumn(name = "QrTokenId", nullable = false)
     private QrToken qrToken;

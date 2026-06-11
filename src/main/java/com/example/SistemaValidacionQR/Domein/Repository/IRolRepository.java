@@ -1,4 +1,4 @@
-package com.example.SistemaValidacionQR.Domein.Interfaces;
+package com.example.SistemaValidacionQR.Domein.Repository;
 
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;

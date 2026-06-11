@@ -4,7 +4,7 @@ import com.example.SistemaValidacionQR.Application.Dto.Auth.AuthRequest;
 import com.example.SistemaValidacionQR.Application.Dto.Auth.AuthResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IAuthService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import com.example.SistemaValidacionQR.Security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;

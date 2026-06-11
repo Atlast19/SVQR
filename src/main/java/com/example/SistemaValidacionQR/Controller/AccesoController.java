@@ -2,13 +2,14 @@ package com.example.SistemaValidacionQR.Controller;
 
 import com.example.SistemaValidacionQR.Application.Dto.Acceso.AccesoResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IAccesoService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/accesos")
+@RequestMapping("/accesos")
 public class AccesoController {
     private final IAccesoService accesoService;
 
@@ -16,19 +17,14 @@ public class AccesoController {
         this.accesoService = accesoService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<AccesoResponse>>
-    obtenerHistorial() {
+    @GetMapping("/GetHistorial")
+    public ResponseEntity<List<AccesoResponse>> obtenerHistorial() {
 
-        return ResponseEntity.ok(
-                accesoService.obtenerHistorial()
-        );
+        return ResponseEntity.ok(accesoService.obtenerHistorial());
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<AccesoResponse>>
-    obtenerHistorialUsuario(
-            @PathVariable Integer usuarioId) {
+    public ResponseEntity<List<AccesoResponse>> obtenerHistorialUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(
                 accesoService.obtenerHistorialUsuario(
@@ -37,22 +33,9 @@ public class AccesoController {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<AccesoResponse>
-    registrarAcceso(
+    @PostMapping("/registrar")
+    public ResponseEntity<AccesoResponse> registrarAcceso(@RequestParam String token, HttpServletRequest request) {
 
-            @RequestParam Integer usuarioId,
-            @RequestParam Integer qrTokenId,
-            @RequestParam String ip,
-            @RequestParam String dispositivo) {
-
-        return ResponseEntity.ok(
-                accesoService.registrarAcceso(
-                        usuarioId,
-                        qrTokenId,
-                        ip,
-                        dispositivo
-                )
-        );
+        return ResponseEntity.ok(accesoService.registrarAcceso(token, request));
     }
 }

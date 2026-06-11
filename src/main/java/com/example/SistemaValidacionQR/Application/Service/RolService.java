@@ -3,7 +3,7 @@ package com.example.SistemaValidacionQR.Application.Service;
 import com.example.SistemaValidacionQR.Application.Dto.Rol.RolResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IRolService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IRolRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IRolRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +66,6 @@ public class RolService implements IRolService {
         response.setNombre(rolGuardado.getNombre());
         response.setDescripcion(rolGuardado.getDescripcion());
         response.setEstado(rolGuardado.getEstado());
-
 
         return response;
     }

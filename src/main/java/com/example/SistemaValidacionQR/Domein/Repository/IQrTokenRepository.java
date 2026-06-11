@@ -1,7 +1,6 @@
-package com.example.SistemaValidacionQR.Domein.Interfaces;
+package com.example.SistemaValidacionQR.Domein.Repository;
 
 import com.example.SistemaValidacionQR.Domein.Entitys.QrToken;
-import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -13,4 +12,6 @@ public interface IQrTokenRepository extends JpaRepository <QrToken, Integer> {
     Optional<QrToken> findByToken(String tokenHash);
 
     List<QrToken> findByUsuarioId(Integer id);
+
+    List<QrToken> findByRevocadoFalseAndFechaExpiracionBefore(LocalDateTime fecha);
 }

@@ -1,7 +1,7 @@
 package com.example.SistemaValidacionQR.Security;
 
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

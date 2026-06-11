@@ -7,8 +7,8 @@ import com.example.SistemaValidacionQR.Application.Inferfaces.IUsuarioService;
 
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IRolRepository;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IRolRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

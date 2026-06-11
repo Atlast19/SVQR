@@ -6,8 +6,8 @@ import com.example.SistemaValidacionQR.Application.Dto.QrToken.QrValidationRespo
 import com.example.SistemaValidacionQR.Application.Inferfaces.IQrTokenService;
 import com.example.SistemaValidacionQR.Domein.Entitys.QrToken;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IQrTokenRepository;
-import com.example.SistemaValidacionQR.Domein.Interfaces.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IQrTokenRepository;
+import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,8 +26,7 @@ public class QrTokenService implements IQrTokenService {
     }
 
     @Override
-    public GenerarQrResponse generarQrToken(
-            Integer usuarioId) {
+    public GenerarQrResponse generarQrToken(Integer usuarioId) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() ->
@@ -45,8 +44,10 @@ public class QrTokenService implements IQrTokenService {
         qrToken.setUsado(false);
         qrToken.setCreatedAt(LocalDateTime.now());
 
+        qrToken.setMatricula(usuario.getMatricula());
+
         qrToken.setFechaExpiracion(
-                LocalDateTime.now().plusMinutes(5)
+                LocalDateTime.now().plusMinutes(10)
         );
 
         qrTokenRepository.save(qrToken);
@@ -67,8 +68,7 @@ public class QrTokenService implements IQrTokenService {
     }
 
     @Override
-    public QrValidationResponse validarQrToken(
-            String token) {
+    public QrValidationResponse validarQrToken(String token) {
 
         QrToken qrToken =
                 qrTokenRepository.findByToken(token)
@@ -79,14 +79,6 @@ public class QrTokenService implements IQrTokenService {
         QrValidationResponse response =
                 new QrValidationResponse();
 
-        if (qrToken.getRevocado()) {
-
-            response.setValido(false);
-            response.setMensaje("QR revocado");
-
-            return response;
-        }
-
         if (qrToken.getUsado()) {
 
             response.setValido(false);
@@ -95,17 +87,23 @@ public class QrTokenService implements IQrTokenService {
             return response;
         }
 
-        if (qrToken.getFechaExpiracion()
-                .isBefore(LocalDateTime.now())) {
+        if (qrToken.getRevocado() ||
+                LocalDateTime.now().isAfter(
+                        qrToken.getFechaExpiracion())) {
 
             response.setValido(false);
-            response.setMensaje("QR expirado");
+            response.setMensaje("Token expirado");
 
             return response;
         }
 
-        Usuario usuario =
-                qrToken.getUsuario();
+        Usuario usuario = qrToken.getUsuario();
+
+
+        qrToken.setUpdatedAt(LocalDateTime.now());
+        qrToken.setUsado(true);
+
+        qrTokenRepository.save(qrToken);
 
         response.setValido(true);
         response.setMensaje("QR válido");
@@ -128,18 +126,20 @@ public class QrTokenService implements IQrTokenService {
 
         QrToken qrToken =
                 qrTokenRepository.findById(tokenId)
+                        .filter(qrTokens -> !qrTokens.getRevocado())
+                        .filter(qrTokens -> !qrTokens.getUsado())
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Token no encontrado"));
 
         qrToken.setRevocado(true);
+        qrToken.setUpdatedAt(LocalDateTime.now());
 
         qrTokenRepository.save(qrToken);
     }
 
     @Override
-    public List<QrTokenResponse> obtenerTokensPorUsuario(
-            Integer usuarioId) {
+    public List<QrTokenResponse> obtenerTokensPorUsuario(Integer usuarioId) {
 
         return qrTokenRepository
                 .findByUsuarioId(usuarioId)
@@ -148,8 +148,7 @@ public class QrTokenService implements IQrTokenService {
                 .toList();
     }
 
-    private QrTokenResponse mapToResponse(
-            QrToken qrToken) {
+    private QrTokenResponse mapToResponse(QrToken qrToken) {
 
         QrTokenResponse response =
                 new QrTokenResponse();
@@ -192,4 +191,5 @@ public class QrTokenService implements IQrTokenService {
 
         return response;
     }
+
 }
