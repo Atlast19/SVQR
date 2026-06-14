@@ -1,6 +1,8 @@
 package com.example.SistemaValidacionQR.Application.Service;
 
+import com.example.SistemaValidacionQR.Application.Dto.Rol.RolRequest;
 import com.example.SistemaValidacionQR.Application.Dto.Rol.RolResponse;
+import com.example.SistemaValidacionQR.Application.Dto.Rol.RolUpdateRequest;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IRolService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
 import com.example.SistemaValidacionQR.Domein.Repository.IRolRepository;
@@ -50,12 +52,16 @@ public class RolService implements IRolService {
     }
 
     @Override
-    public RolResponse guardar(Rol rol) {
+    public RolResponse guardar(RolRequest request) {
 
-        if (rolRepository.existsByNombre(rol.getNombre())) {
+        if (rolRepository.existsByNombre(request.getNombre())) {
             throw new RuntimeException("Ya existe un rol con ese nombre");
         }
 
+        Rol rol = new Rol();
+
+        rol.setNombre(request.getNombre());
+        rol.setDescripcion(request.getDescripcion());
         rol.setEstado(EstadoGenerico.ACTIVO);
 
         Rol rolGuardado = rolRepository.save(rol);
@@ -71,23 +77,28 @@ public class RolService implements IRolService {
     }
 
     @Override
-    public RolResponse actualizar(Integer id, Rol rolActualizado) {
+    public RolResponse actualizar(Integer id, RolUpdateRequest request) {
 
         Rol rol = rolRepository.findById(id)
-                .filter(roles -> roles.getEstado() == EstadoGenerico.ACTIVO)
+                .filter(r -> r.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Rol no encontrado"));
 
-        rol.setNombre(rolActualizado.getNombre());
-        rol.setDescripcion(rolActualizado.getDescripcion());
+        if (request.getNombre() != null &&
+                !request.getNombre().isBlank()) {
 
-        Rol rolActualizados = rolRepository.save(rol);
+            rol.setNombre(request.getNombre());
+        }
 
-        return mapToResponse(rolActualizados);
+        if (request.getDescripcion() != null) {
+            rol.setDescripcion(request.getDescripcion());
+        }
 
+        rol.setUpdatedAt(LocalDateTime.now());
 
+        Rol rolActualizado = rolRepository.save(rol);
 
-
+        return mapToResponse(rolActualizado);
     }
 
     @Override

@@ -26,11 +26,7 @@ public class AccesoController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<AccesoResponse>> obtenerHistorialUsuario(@PathVariable Integer usuarioId) {
 
-        return ResponseEntity.ok(
-                accesoService.obtenerHistorialUsuario(
-                        usuarioId
-                )
-        );
+        return ResponseEntity.ok(accesoService.obtenerHistorialUsuario(usuarioId));
     }
 
     @PostMapping("/registrar")

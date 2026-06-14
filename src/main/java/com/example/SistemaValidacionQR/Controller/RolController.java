@@ -1,8 +1,11 @@
 package com.example.SistemaValidacionQR.Controller;
 
+import com.example.SistemaValidacionQR.Application.Dto.Rol.RolRequest;
 import com.example.SistemaValidacionQR.Application.Dto.Rol.RolResponse;
+import com.example.SistemaValidacionQR.Application.Dto.Rol.RolUpdateRequest;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IRolService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Rol;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,19 +46,15 @@ public class RolController {
     }
 
     @PostMapping("/CreateRoles")
-    public ResponseEntity<RolResponse> guardar(@RequestBody Rol rol) {
+    public ResponseEntity<RolResponse> guardar(@Valid @RequestBody RolRequest request) {
 
-        return ResponseEntity.ok(
-                rolService.guardar(rol)
-        );
+        return ResponseEntity.ok(rolService.guardar(request));
     }
 
     @PutMapping("/UpdateRoles/{id}")
-    public ResponseEntity<RolResponse> actualizar(@PathVariable Integer id, @RequestBody Rol rol) {
+    public ResponseEntity<RolResponse> actualizar(@PathVariable Integer id, @Valid @RequestBody RolUpdateRequest request) {
 
-        return ResponseEntity.ok(
-                rolService.actualizar(id, rol)
-        );
+        return ResponseEntity.ok(rolService.actualizar(id, request));
     }
 
     @DeleteMapping("/DeleteRoles/{id}")
