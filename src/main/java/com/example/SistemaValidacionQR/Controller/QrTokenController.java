@@ -18,7 +18,7 @@ public class QrTokenController {
         this.qrTokenService = QrTokenService;
     }
 
-    @PostMapping("/generar/{usuarioId}")
+    @PostMapping("/generar/{usuarioId}") // ESTUDIANTE - ADMINISTRADORES
     public ResponseEntity<GenerarQrResponse> generarQr(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(
@@ -26,7 +26,7 @@ public class QrTokenController {
         );
     }
 
-    @GetMapping("/validar")
+    @GetMapping("/validar") // ESTUDIANTE - ADMINSTRADOR
     public ResponseEntity<QrValidationResponse> validarQr(@RequestParam String token) {
 
         return ResponseEntity.ok(
@@ -34,7 +34,7 @@ public class QrTokenController {
         );
     }
 
-    @PostMapping("/revocar/{tokenId}")
+    @PostMapping("/revocar/{tokenId}") // ADMINISTRADOR
     public ResponseEntity<String> revocarQr(@PathVariable Integer tokenId) {
 
         qrTokenService.revocarToken(tokenId);
@@ -42,7 +42,7 @@ public class QrTokenController {
         return ResponseEntity.ok("QR revocado correctamente");
     }
 
-    @GetMapping("/usuario/{usuarioId}")
+    @GetMapping("/usuarios/{usuarioId}") // ADMINISTRADOR
     public ResponseEntity<List<QrTokenResponse>> obtenerTokensPorUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(

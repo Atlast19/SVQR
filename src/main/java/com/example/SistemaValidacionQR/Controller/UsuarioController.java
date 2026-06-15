@@ -22,7 +22,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/GetAllUsuarios")
+    @GetMapping("/GetAllUsuarios") // ADMINISTRADOR
     public ResponseEntity<List<UsuarioResponse>> obtenerTodos() {
 
         return ResponseEntity.ok(
@@ -30,54 +30,47 @@ public class UsuarioController {
         );
     }
 
-    @GetMapping("/GetUsuarioById/{id}")
-    public ResponseEntity<UsuarioResponse> obtenerPorId(
-            @PathVariable Integer id) {
+    @GetMapping("/GetUsuarioById/{id}") //ADMINISTRADOR
+    public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable Integer id) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorId(id)
         );
     }
 
-    @GetMapping("/Email/{email}")
-    public ResponseEntity<UsuarioResponse> obtenerPorEmail(
-            @PathVariable String email) {
+    @GetMapping("/Email/{email}") // ADMINSITRADOR
+    public ResponseEntity<UsuarioResponse> obtenerPorEmail(@PathVariable String email) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorEmail(email)
         );
     }
 
-    @GetMapping("/Matricula/{matricula}")
-    public ResponseEntity<UsuarioResponse> obtenerPorMatricula(
-            @PathVariable String matricula) {
+    @GetMapping("/Matricula/{matricula}")// ADMINISTRADOR
+    public ResponseEntity<UsuarioResponse> obtenerPorMatricula(@PathVariable String matricula) {
 
         return ResponseEntity.ok(
                 usuarioService.obtenerPorMatricula(matricula)
         );
     }
 
-    @PostMapping("/CreateUsuarios")
-    public ResponseEntity<UsuarioResponse> crearUsuario(
-            @Valid @RequestBody UsuarioRequest request) {
+    @PostMapping("/CreateUsuarios") // TODOS
+    public ResponseEntity<UsuarioResponse> crearUsuario(@Valid @RequestBody UsuarioRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuarioService.crearUsuario(request));
     }
 
-    @PutMapping("/UpdateUsuarioById/{id}")
-    public ResponseEntity<UsuarioResponse> actualizarUsuario(
-            @PathVariable Integer id,
-            @Valid @RequestBody UsuarioUpdateRequest request) {
+    @PutMapping("/UpdateUsuarioById/{id}") // ESTUDIANTE
+    public ResponseEntity<UsuarioResponse> actualizarUsuario(@PathVariable Integer id, @Valid @RequestBody UsuarioUpdateRequest request) {
 
         return ResponseEntity.ok(
                 usuarioService.actualizarUsuario(id, request)
         );
     }
 
-    @DeleteMapping("/DeleteUsuario/{id}")
-    public ResponseEntity<Void> eliminarUsuario(
-            @PathVariable Integer id) {
+    @DeleteMapping("/DeleteUsuario/{id}") // ADMINISTRAODR
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
 
         usuarioService.eliminar(id);
 

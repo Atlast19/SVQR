@@ -19,7 +19,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") // TODOS
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
 
         return ResponseEntity.ok(authService.login(request));

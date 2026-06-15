@@ -17,19 +17,19 @@ public class AccesoController {
         this.accesoService = accesoService;
     }
 
-    @GetMapping("/GetHistorial")
+    @GetMapping("/GetHistorial") // ADMINISTRADOR
     public ResponseEntity<List<AccesoResponse>> obtenerHistorial() {
 
         return ResponseEntity.ok(accesoService.obtenerHistorial());
     }
 
-    @GetMapping("/usuario/{usuarioId}")
+    @GetMapping("/usuarios/{usuarioId}") // ADMINISTRADOR
     public ResponseEntity<List<AccesoResponse>> obtenerHistorialUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(accesoService.obtenerHistorialUsuario(usuarioId));
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/registrar") // ESTUDIANTE
     public ResponseEntity<AccesoResponse> registrarAcceso(@RequestParam String token, HttpServletRequest request) {
 
         return ResponseEntity.ok(accesoService.registrarAcceso(token, request));

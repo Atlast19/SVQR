@@ -20,7 +20,7 @@ public class RolController {
     public RolController(IRolService rolService) {
         this.rolService = rolService;
     }
-
+    //Todos son de ADMINISTRADOR
     @GetMapping("/GetAllRoles")
     public ResponseEntity<List<RolResponse>> obtenerTodos() {
 

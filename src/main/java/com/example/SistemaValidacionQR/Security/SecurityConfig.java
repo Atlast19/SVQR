@@ -46,14 +46,30 @@ public class SecurityConfig {
 
                         // Login público
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-
-                        //Usuario publico para pruebas
                         .requestMatchers("/usuarios/CreateUsuarios").permitAll()
-                        .requestMatchers("/error").permitAll()
+
+
+                        //ESTUDIANTE
+                        .requestMatchers("/usuarios/UpdateUsuarioById/{id}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/qr/generar/{usuariosId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/qr/validar").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/accesos/registrar").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/qr/usuarios/{usuarioId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
 
                         // Administración
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/roles/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/GetAllUsuarios").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/GetUsuarioById/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/DeleteUsuario/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/Email/{email}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/Matricula/{matricula}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/qr/revocar/{tokenId}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/accesos/usuarios/{usuarioId}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/accesos/GetHistorial").hasRole("ADMINISTRADOR")
+
+
+
+
                         .requestMatchers("/error").permitAll()
 
 

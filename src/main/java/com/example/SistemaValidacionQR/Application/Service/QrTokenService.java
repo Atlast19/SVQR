@@ -8,6 +8,7 @@ import com.example.SistemaValidacionQR.Domein.Entitys.QrToken;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Repository.IQrTokenRepository;
 import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
+import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class QrTokenService implements IQrTokenService {
     public GenerarQrResponse generarQrToken(Integer usuarioId) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
+                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Usuario no encontrado"));

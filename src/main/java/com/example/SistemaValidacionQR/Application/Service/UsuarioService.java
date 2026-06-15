@@ -10,6 +10,8 @@ import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Repository.IRolRepository;
 import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -110,6 +112,22 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public UsuarioResponse actualizarUsuario(Integer id, UsuarioUpdateRequest request) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String emailLogueado = authentication.getName();
+
+        Usuario usuarioLogueado =
+                usuarioRepository.findByEmail(emailLogueado)
+                        .orElseThrow(() ->
+                                new RuntimeException("Usuario no encontrado"));
+
+        if (!usuarioLogueado.getId().equals(id)) {
+            throw new RuntimeException(
+                    "No puede modificar otro usuario"
+            );
+        }
 
         Usuario usuario = usuarioRepository.findById(id)
                 .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
