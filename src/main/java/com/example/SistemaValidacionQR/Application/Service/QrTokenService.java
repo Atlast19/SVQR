@@ -9,9 +9,17 @@ import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Repository.IQrTokenRepository;
 import com.example.SistemaValidacionQR.Domein.Repository.IUsuarioRepository;
 import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,16 +37,22 @@ public class QrTokenService implements IQrTokenService {
     @Override
     public GenerarQrResponse generarQrToken(Integer usuarioId) {
 
+
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
+                .filter(usuarios ->
+                        usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Usuario no encontrado"));
 
+
         String token =
                 UUID.randomUUID().toString();
 
+
+
         QrToken qrToken = new QrToken();
+
 
         qrToken.setToken(token);
         qrToken.setUsuario(usuario);
@@ -46,29 +60,45 @@ public class QrTokenService implements IQrTokenService {
         qrToken.setUsado(false);
         qrToken.setCreatedAt(LocalDateTime.now());
 
-        qrToken.setMatricula(usuario.getMatricula());
+        qrToken.setMatricula(
+                usuario.getMatricula()
+        );
+
 
         qrToken.setFechaExpiracion(
                 LocalDateTime.now().plusMinutes(10)
         );
 
+
         qrTokenRepository.save(qrToken);
+
+
+
+        String qrBase64 =
+                generarQrBase64(token);
+
+
 
         GenerarQrResponse response =
                 new GenerarQrResponse();
 
+
         response.setToken(token);
 
-        // temporalmente vacío
-        response.setQrBase64("");
-
-        response.setFechaExpiracion(
-                qrToken.getFechaExpiracion().toString()
+        response.setQrBase64(
+                qrBase64
         );
 
-        return response;
-    }
 
+        response.setFechaExpiracion(
+                qrToken.getFechaExpiracion()
+                        .toString()
+        );
+
+
+        return response;
+
+    }
     @Override
     public QrValidationResponse validarQrToken(String token) {
 
@@ -148,6 +178,69 @@ public class QrTokenService implements IQrTokenService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    private String generarQrBase64(String contenido) {
+
+
+        try {
+
+
+            QRCodeWriter qrCodeWriter =
+                    new QRCodeWriter();
+
+
+
+            BitMatrix bitMatrix =
+                    qrCodeWriter.encode(
+                            contenido,
+                            BarcodeFormat.QR_CODE,
+                            300,
+                            300
+                    );
+
+
+
+            BufferedImage bufferedImage =
+                    MatrixToImageWriter.toBufferedImage(
+                            bitMatrix
+                    );
+
+
+
+            ByteArrayOutputStream outputStream =
+                    new ByteArrayOutputStream();
+
+
+
+            ImageIO.write(
+                    bufferedImage,
+                    "png",
+                    outputStream
+            );
+
+
+
+            byte[] imageBytes =
+                    outputStream.toByteArray();
+
+
+
+            return Base64.getEncoder()
+                    .encodeToString(imageBytes);
+
+
+
+        } catch (Exception e) {
+
+
+            throw new RuntimeException(
+                    "Error generando QR",
+                    e
+            );
+
+        }
+
     }
 
     private QrTokenResponse mapToResponse(QrToken qrToken) {
