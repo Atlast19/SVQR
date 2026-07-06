@@ -21,4 +21,7 @@ public class AccesoResponse {
     private EstadoAcceso estado;
     private String ipAddress;
     private String dispositivo;
+    private Integer eventoId; // Agregados de Evento
+    private String nombreEvento; // Agregado de Evento
+    private String codigo; // Agregados de Evento
 }

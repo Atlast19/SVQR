@@ -17,7 +17,7 @@ public class TokenSchedulerService {
         this.qrTokenRepository = qrTokenRepository;
     }
 
-    @Scheduled(fixedRate = 600111)
+    @Scheduled(fixedRate = 600000)
     public void revocarTokensExpirados() {
 
         List<QrToken> tokensExpirados =

@@ -13,7 +13,9 @@ public class AuthResponse {
 
     private String token;
     private Integer usuarioId;
+    private String matricula;
     private String nombre;
+    private String apellido;
     private String email;
     private String rol;
 }

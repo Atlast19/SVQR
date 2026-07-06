@@ -49,12 +49,22 @@ public class SecurityConfig {
                         .requestMatchers("/usuarios/CreateUsuarios").permitAll()
 
 
-                        //ESTUDIANTE
-                        .requestMatchers("/usuarios/UpdateUsuarioById/{id}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
-                        .requestMatchers("/qr/generar/{usuariosId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
-                        .requestMatchers("/qr/validar").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
-                        .requestMatchers("/accesos/registrar").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
-                        .requestMatchers("/qr/usuarios/{usuarioId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        //Actualizar Usuario
+                        .requestMatchers("/usuarios/UpdateUsuarioById/{id}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        //Generar el QR
+                        .requestMatchers("/qr/generar/{usuariosId}/{eventoId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ADMINISTRADOR")
+                        //QR generados por el Usuario
+                        .requestMatchers("/qr/usuarios/{usuarioId}").hasAnyAuthority("ESTUDIANTE", "ADMINISTRADOR")
+                        //Historial de Acceso
+                        .requestMatchers("/accesos/usuarios/{usuarioId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        // Buscar eventos por nombre
+                        .requestMatchers("/api/eventos/GetEventoByNombre/{nombre}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        // Buscar evento por codigo
+                        .requestMatchers("/api/eventos/GetEventoByCodigo/{codigo}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        // Ver todos los eventos
+                        .requestMatchers("/api/eventos/GetAllEventos").hasAnyRole("ESTUDIANTE", "ADMINISTRADOR")
+
+
 
                         // Administración
                         .requestMatchers("/roles/**").hasRole("ADMINISTRADOR")
@@ -64,8 +74,11 @@ public class SecurityConfig {
                         .requestMatchers("/usuarios/Email/{email}").hasRole("ADMINISTRADOR")
                         .requestMatchers("/usuarios/Matricula/{matricula}").hasRole("ADMINISTRADOR")
                         .requestMatchers("/qr/revocar/{tokenId}").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/accesos/usuarios/{usuarioId}").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/accesos/GetHistorial").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/accesos/registrar").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/eventos/CrearEvento").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/eventos/UpdateEvento/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/eventos/GetEventoById/{id}").hasRole("ADMINISTRADOR")
 
 
 
@@ -98,5 +111,5 @@ public class SecurityConfig {
             throws Exception {
 
         return configuration.getAuthenticationManager();
-    }
+   }
 }

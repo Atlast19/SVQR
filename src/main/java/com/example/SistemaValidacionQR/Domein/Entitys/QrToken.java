@@ -43,6 +43,13 @@ public class QrToken {
     @JoinColumn(name = "UsuarioId", nullable = false)
     private Usuario usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "EventoId", nullable = false)
+    private Evento evento;
+
+    @Column(name = "Codigo", nullable = false, unique = true, length = 10)
+    private  String Codigo;
+
     @OneToMany
     private List<Acceso> accesos;
 }

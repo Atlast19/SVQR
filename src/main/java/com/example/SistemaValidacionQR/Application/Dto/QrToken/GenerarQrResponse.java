@@ -12,5 +12,9 @@ public class GenerarQrResponse {
 
     private String token;
     private String qrBase64;
+    private String matricula;
     private String fechaExpiracion;
+    private Integer eventoId;
+    private String codigo;
+    private Integer usuarioId;
 }

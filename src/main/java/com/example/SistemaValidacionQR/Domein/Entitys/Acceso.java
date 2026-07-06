@@ -40,4 +40,8 @@ public class Acceso {
     @ManyToOne
     @JoinColumn(name = "QrTokenId", nullable = false)
     private QrToken qrToken;
+
+    @ManyToOne
+    @JoinColumn(name = "EventoId", nullable = false)
+    private Evento evento;
 }

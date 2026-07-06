@@ -101,7 +101,6 @@ public class UsuarioService implements IUsuarioService {
         usuario.setEstado(EstadoGenerico.ACTIVO);
 
         usuario.setCreatedAt(LocalDateTime.now());
-        usuario.setUpdatedAt(LocalDateTime.now());
 
         usuario.setRol(rol);
 
@@ -123,20 +122,13 @@ public class UsuarioService implements IUsuarioService {
                         .orElseThrow(() ->
                                 new RuntimeException("Usuario no encontrado"));
 
-        if (!usuarioLogueado.getId().equals(id)) {
-            throw new RuntimeException(
-                    "No puede modificar otro usuario"
-            );
-        }
 
         Usuario usuario = usuarioRepository.findById(id)
                 .filter(usuarios -> usuarios.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
 
-        Rol rol = rolRepository.findById(2)
-                .orElseThrow(() ->
-                        new RuntimeException("Rol no encontrado"));
+
 
         if (request.getPassword() != null &&
                 !request.getPassword().trim().isEmpty()) {
@@ -149,7 +141,6 @@ public class UsuarioService implements IUsuarioService {
         usuario.setNombre(request.getNombre());
         usuario.setApellido(request.getApellido());
         usuario.setEmail(request.getEmail());
-        usuario.setRol(rol);
 
         usuario.setUpdatedAt(LocalDateTime.now());
 

@@ -23,13 +23,13 @@ public class AccesoController {
         return ResponseEntity.ok(accesoService.obtenerHistorial());
     }
 
-    @GetMapping("/usuarios/{usuarioId}") // ADMINISTRADOR
+    @GetMapping("/usuarios/{usuarioId}") // ESTUDIANTE - ADMINISTRADOR
     public ResponseEntity<List<AccesoResponse>> obtenerHistorialUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(accesoService.obtenerHistorialUsuario(usuarioId));
     }
 
-    @PostMapping("/registrar") // ESTUDIANTE
+    @PostMapping("/registrar") // ADMINISTRADOR
     public ResponseEntity<AccesoResponse> registrarAcceso(@RequestParam String token, HttpServletRequest request) {
 
         return ResponseEntity.ok(accesoService.registrarAcceso(token, request));

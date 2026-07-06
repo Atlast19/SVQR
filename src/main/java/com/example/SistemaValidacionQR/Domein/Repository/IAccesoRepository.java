@@ -8,4 +8,6 @@ import java.util.List;
 public interface IAccesoRepository extends JpaRepository <Acceso, Integer> {
 
     List<Acceso> findByUsuarioId(Integer usuarioId);
+
+    List<Acceso> findByEventoId(Integer eventoId);
 }

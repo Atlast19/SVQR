@@ -51,26 +51,19 @@ public class AuthService implements IAuthService {
             throw new RuntimeException("El usuario se encuentra inactivo");
         }
 
-        UserDetails userDetails =
-                customUserDetailsService
-                        .loadUserByUsername(request.getEmail());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(request.getEmail());
 
-        String token =
-                jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(userDetails);
 
-        AuthResponse response =
-                new AuthResponse();
+        AuthResponse response = new AuthResponse();
 
         response.setToken(token);
         response.setUsuarioId(usuario.getId());
-        response.setNombre(
-                usuario.getNombre() + " " +
-                        usuario.getApellido()
-        );
+        response.setNombre(usuario.getNombre());
+        response.setApellido(usuario.getApellido());
         response.setEmail(usuario.getEmail());
-        response.setRol(
-                usuario.getRol().getNombre()
-        );
+        response.setRol(usuario.getRol().getNombre());
+        response.setMatricula(usuario.getMatricula());
 
         return response;
     }

@@ -3,6 +3,7 @@ package com.example.SistemaValidacionQR.Application.Service;
 import com.example.SistemaValidacionQR.Application.Dto.Acceso.AccesoResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IAccesoService;
 import com.example.SistemaValidacionQR.Domein.Entitys.Acceso;
+import com.example.SistemaValidacionQR.Domein.Entitys.Evento;
 import com.example.SistemaValidacionQR.Domein.Entitys.QrToken;
 import com.example.SistemaValidacionQR.Domein.Entitys.Usuario;
 import com.example.SistemaValidacionQR.Domein.Repository.IAccesoRepository;
@@ -30,44 +31,81 @@ public class AccesoService implements IAccesoService {
     @Override
     public AccesoResponse registrarAcceso(String token, HttpServletRequest request) {
 
-        QrToken qrToken = qrTokenRepository
-                .findByToken(token)
-                .filter(qrTokens -> !qrTokens.getRevocado())
-                .filter(qrTokens -> !qrTokens.getUsado())
+        QrToken qrToken = qrTokenRepository.findByToken(token)
                 .orElseThrow(() ->
                         new RuntimeException("QR no encontrado"));
 
+        // Validar si ya fue utilizado
+        if (qrToken.getUsado()) {
+            throw new RuntimeException("QR ya utilizado");
+        }
+
+        // Validar si está revocado o expirado
+        if (qrToken.getRevocado()
+                || LocalDateTime.now().isAfter(qrToken.getFechaExpiracion())) {
+            throw new RuntimeException("QR expirado o revocado");
+        }
+
         Usuario usuario = qrToken.getUsuario();
 
+        Evento evento = qrToken.getEvento();
 
-        String ip = request.getRemoteAddr();
+        // Marcar QR como utilizado
+        qrToken.setUsado(true);
+        qrToken.setUpdatedAt(LocalDateTime.now());
 
-        String dispositivo = request.getHeader("User-Agent");
+        qrTokenRepository.save(qrToken);
 
+        // Registrar acceso
         Acceso acceso = new Acceso();
 
         acceso.setUsuario(usuario);
         acceso.setQrToken(qrToken);
+        acceso.setEvento(evento);
+
         acceso.setMatricula(usuario.getMatricula());
-        acceso.setIpAddress(ip);
-        acceso.setDispositivo(dispositivo);
+        acceso.setIpAddress(request.getRemoteAddr());
+        acceso.setDispositivo(request.getHeader("User-Agent"));
         acceso.setFechaAcceso(LocalDateTime.now());
         acceso.setEstado(EstadoAcceso.APROBADO);
 
-        accesoRepository.save(acceso);
+        acceso = accesoRepository.save(acceso);
 
-        AccesoResponse response =
-                new AccesoResponse();
+        // Construir respuesta
+        AccesoResponse response = new AccesoResponse();
 
         response.setId(acceso.getId());
+
         response.setUsuarioId(usuario.getId());
+
         response.setMatricula(usuario.getMatricula());
+
+        response.setNombreCompleto(
+                usuario.getNombre()
+                        + " "
+                        + usuario.getApellido()
+        );
+
         response.setFechaAcceso(acceso.getFechaAcceso());
-        response.setMatricula(acceso.getMatricula());
-        response.setIpAddress(acceso.getIpAddress());
-        response.setDispositivo(acceso.getDispositivo());
+
         response.setEstado(acceso.getEstado());
 
+        response.setIpAddress(acceso.getIpAddress());
+
+        response.setDispositivo(acceso.getDispositivo());
+
+        if (evento != null) {
+
+            response.setEventoId(evento.getId());
+
+            response.setNombreEvento(
+                    evento.getNombre()
+            );
+
+            response.setCodigo(
+                    evento.getCodigo()
+            );
+        }
 
         return response;
     }

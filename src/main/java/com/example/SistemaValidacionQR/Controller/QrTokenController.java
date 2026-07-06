@@ -2,7 +2,6 @@ package com.example.SistemaValidacionQR.Controller;
 
 import com.example.SistemaValidacionQR.Application.Dto.QrToken.GenerarQrResponse;
 import com.example.SistemaValidacionQR.Application.Dto.QrToken.QrTokenResponse;
-import com.example.SistemaValidacionQR.Application.Dto.QrToken.QrValidationResponse;
 import com.example.SistemaValidacionQR.Application.Inferfaces.IQrTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +17,11 @@ public class QrTokenController {
         this.qrTokenService = QrTokenService;
     }
 
-    @PostMapping("/generar/{usuarioId}") // ESTUDIANTE - ADMINISTRADORES
-    public ResponseEntity<GenerarQrResponse> generarQr(@PathVariable Integer usuarioId) {
+    @PostMapping("/generar/{usuarioId}/{eventoId}") // ESTUDIANTE - ADMINISTRADORES
+    public ResponseEntity<GenerarQrResponse> generarQr(@PathVariable Integer usuarioId, @PathVariable Integer eventoId) {
 
         return ResponseEntity.ok(
-                qrTokenService.generarQrToken(usuarioId)
-        );
-    }
-
-    @GetMapping("/validar") // ESTUDIANTE - ADMINSTRADOR
-    public ResponseEntity<QrValidationResponse> validarQr(@RequestParam String token) {
-
-        return ResponseEntity.ok(
-                qrTokenService.validarQrToken(token)
+                qrTokenService.generarQrToken(usuarioId, eventoId)
         );
     }
 
@@ -42,7 +33,7 @@ public class QrTokenController {
         return ResponseEntity.ok("QR revocado correctamente");
     }
 
-    @GetMapping("/usuarios/{usuarioId}") // ADMINISTRADOR
+    @GetMapping("/usuarios/{usuarioId}") // ESTUDIANETE - ADMINISTRADOR
     public ResponseEntity<List<QrTokenResponse>> obtenerTokensPorUsuario(@PathVariable Integer usuarioId) {
 
         return ResponseEntity.ok(
