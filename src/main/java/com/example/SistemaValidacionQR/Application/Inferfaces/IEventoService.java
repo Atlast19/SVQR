@@ -22,5 +22,7 @@ public interface IEventoService {
 
     List<EventoResponse> getEventosActivos();
 
+    void eliminarEvento(Integer id);
+
     EventoResponse actualizarEvento(Integer id, EventoRequest request);
 }

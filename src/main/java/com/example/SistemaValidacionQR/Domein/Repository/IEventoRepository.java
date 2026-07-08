@@ -13,14 +13,7 @@ import java.util.Optional;
 
 public interface IEventoRepository extends JpaRepository<Evento, Integer> {
 
-    @Query("""
-SELECT e
-FROM Evento e
-WHERE YEAR(e.createdAt) = :anio
-ORDER BY e.id DESC
-""")
-    List<Evento> obtenerEventosDelAnio(
-            @Param("anio") Integer anio);
+    Optional<Evento> findTopByOrderByIdDesc();
 
     Optional<Evento> findByCodigo(String codigo);
 
@@ -29,5 +22,7 @@ ORDER BY e.id DESC
     List<Evento> findByEstado(EstadoGenerico estado);
 
     Optional<Evento> findById(Integer id);
+
+    Optional<Evento> findFirstByEstadoOrderByFechaExpiracionAsc(EstadoGenerico estado);
 
 }

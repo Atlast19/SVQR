@@ -50,17 +50,17 @@ public class SecurityConfig {
 
 
                         //Actualizar Usuario
-                        .requestMatchers("/usuarios/UpdateUsuarioById/{id}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/usuarios/UpdateUsuarioById/{id}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
                         //Generar el QR
-                        .requestMatchers("/qr/generar/{usuariosId}/{eventoId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ADMINISTRADOR")
+                        .requestMatchers("/qr/generar/{usuariosId}/{eventoId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
                         //QR generados por el Usuario
-                        .requestMatchers("/qr/usuarios/{usuarioId}").hasAnyAuthority("ESTUDIANTE", "ADMINISTRADOR")
+                        .requestMatchers("/qr/usuarios/{usuarioId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
                         //Historial de Acceso
                         .requestMatchers("/accesos/usuarios/{usuarioId}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
                         // Buscar eventos por nombre
-                        .requestMatchers("/api/eventos/GetEventoByNombre/{nombre}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/api/eventos/GetEventoByNombre/{nombre}").hasAnyAuthority("ROLE_ESTUDIANTE", "ROLE_ADMINISTRADOR")
                         // Buscar evento por codigo
-                        .requestMatchers("/api/eventos/GetEventoByCodigo/{codigo}").hasAnyAuthority("ESTUDIANTE", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/api/eventos/GetEventoByCodigo/{codigo}").hasAnyAuthority("ESTUDIANTE", "ADMINISTRADOR")
                         // Ver todos los eventos
                         .requestMatchers("/api/eventos/GetAllEventos").hasAnyRole("ESTUDIANTE", "ADMINISTRADOR")
 
@@ -79,6 +79,7 @@ public class SecurityConfig {
                         .requestMatchers("/eventos/CrearEvento").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/eventos/UpdateEvento/{id}").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/eventos/GetEventoById/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/eventos/DeleteEvento/{id}").hasAnyRole("ADMINISTRADOR")
 
 
 

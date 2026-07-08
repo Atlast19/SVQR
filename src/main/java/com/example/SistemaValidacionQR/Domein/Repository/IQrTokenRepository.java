@@ -38,9 +38,8 @@ WHERE q.evento.id = :eventoId
 AND q.usado = false
 AND q.revocado = false
 """)
-    List<QrToken> obtenerQrActivosPorEvento(
-            @Param("eventoId") Integer eventoId);
+    List<QrToken> obtenerQrActivosPorEvento(@Param("eventoId") Integer eventoId);
 
 
-    List<QrToken> findByRevocadoFalseAndFechaExpiracionBefore(LocalDateTime fecha);
+    List<QrToken> findByEventoIdAndRevocadoFalse(Integer eventoId);
 }

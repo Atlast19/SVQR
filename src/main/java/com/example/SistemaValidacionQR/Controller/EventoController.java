@@ -83,6 +83,13 @@ public class EventoController {
         );
     }
 
+    @DeleteMapping("/DeleteEvento/{id}")
+    public ResponseEntity<Void> eliminarEvento(@PathVariable Integer id) {
+
+        eventoService.eliminarEvento(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/GetEventosActivos")
     public ResponseEntity<List<EventoResponse>> getEventosActivos() {
 

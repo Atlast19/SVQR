@@ -13,7 +13,9 @@ import com.example.SistemaValidacionQR.Domein.enums.EstadoGenerico;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventoService implements IEventoService {
@@ -21,11 +23,13 @@ public class EventoService implements IEventoService {
     private final IEventoRepository eventoRepository;
     private final IAccesoRepository accesoRepository;
     private final IQrTokenService qrTokenService;
+    private final EventoSchedulerService eventoSchedulerService;
 
-    public EventoService(IEventoRepository eventoRepository, IAccesoRepository accesoRepository, IQrTokenService qrTokenService) {
+    public EventoService(IEventoRepository eventoRepository, IAccesoRepository accesoRepository, IQrTokenService qrTokenService, EventoSchedulerService eventoSchedulerService) {
         this.eventoRepository = eventoRepository;
         this.accesoRepository = accesoRepository;
         this.qrTokenService = qrTokenService;
+        this.eventoSchedulerService = eventoSchedulerService;
     }
 
     @Override
@@ -49,6 +53,7 @@ public class EventoService implements IEventoService {
         evento.setEstado(EstadoGenerico.ACTIVO);
 
         eventoRepository.save(evento);
+        eventoSchedulerService.reprogramar();
 
         return mapToResponse(evento);
     }
@@ -69,6 +74,7 @@ public class EventoService implements IEventoService {
     public EventoResponse getEventoByCodigo(String codigo) {
 
         Evento evento = eventoRepository.findByCodigo(codigo)
+                .filter(eventos -> eventos.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Evento no encontrado"
@@ -82,10 +88,8 @@ public class EventoService implements IEventoService {
 
         List<Evento> eventos = eventoRepository.findAll()
                 .stream()
-                .filter(e ->
-                        e.getNombre()
-                                .toLowerCase()
-                                .contains(nombre.toLowerCase()))
+                .filter(e -> e.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .filter(evento -> evento.getEstado() == EstadoGenerico.ACTIVO)
                 .toList();
 
         return eventos.stream()
@@ -200,7 +204,7 @@ public class EventoService implements IEventoService {
     public List<EventoResponse> getAllEventos() {
 
         return eventoRepository.findAll()
-                .stream()
+                .stream().filter(evento -> evento.getEstado() == EstadoGenerico.ACTIVO)
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -217,16 +221,33 @@ public class EventoService implements IEventoService {
     }
 
     @Override
-    public EventoResponse actualizarEvento(Integer id, EventoRequest request) {
+    public void eliminarEvento(Integer id) {
+
         Evento evento = eventoRepository.findById(id)
+                .filter(eventos -> eventos.getEstado() == EstadoGenerico.ACTIVO)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Evento no encontrado"
                         ));
 
-        if (!evento.getCodigo().equals(generarCodigoEvento())
-                &&
-                eventoRepository.existsByCodigo(generarCodigoEvento())) {
+        evento.setEstado(EstadoGenerico.INACTIVO);
+        evento.setUpdatedAt(LocalDateTime.now());
+
+        eventoRepository.save(evento);
+
+        eventoSchedulerService.reprogramar();
+    }
+
+    @Override
+    public EventoResponse actualizarEvento(Integer id, EventoRequest request) {
+        Evento evento = eventoRepository.findById(id)
+                .filter(eventos -> eventos.getEstado() == EstadoGenerico.ACTIVO)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Evento no encontrado"
+                        ));
+
+        if (!evento.getCodigo().equals(generarCodigoEvento()) && eventoRepository.existsByCodigo(generarCodigoEvento())) {
 
             throw new RuntimeException(
                     "Ya existe un evento con el código: "
@@ -240,43 +261,29 @@ public class EventoService implements IEventoService {
         evento.setFechaInicio(request.getFechaInicio());
         evento.setFechaExpiracion(request.getFechaExpiracion());
 
+        qrTokenService.actualizarFechaExpiracionPorEvento(evento.getId(), evento.getFechaExpiracion());
         eventoRepository.save(evento);
-
-        qrTokenService.actualizarFechaExpiracionPorEvento(
-                evento.getId(),
-                evento.getFechaExpiracion()
-        );
+        eventoSchedulerService.reprogramar();
 
         return mapToResponse(evento);
     }
 
     private String generarCodigoEvento() {
 
-        int anio = LocalDate.now().getYear();
-
-        List<Evento> eventos =
-                eventoRepository.obtenerEventosDelAnio(anio);
+        Optional<Evento> ultimoEvento = eventoRepository.findTopByOrderByIdDesc();
 
         int consecutivo = 1;
 
-        if (!eventos.isEmpty()) {
+        if (ultimoEvento.isPresent()) {
 
-            Evento ultimo = eventos.get(0);
+            String codigo = ultimoEvento.get().getCodigo();
 
-            String codigo = ultimo.getCodigo();
-
-            // Ejemplo: EV260001
-            consecutivo = Integer.parseInt(
-                    codigo.substring(4)
-            ) + 1;
+            consecutivo = Integer.parseInt(codigo.substring(6)) + 1;
         }
 
-
-        return String.format(
-                "EV%02d%04d",
-                anio,
-                consecutivo
-        );
+        return String.format("EV%d%04d",
+                LocalDate.now().getYear(),
+                consecutivo);
     }
 
     private EventoResponse mapToResponse(Evento evento) {
