@@ -50,10 +50,12 @@ public class QrTokenService implements IQrTokenService {
                         ));
 
         Evento evento = eventoRepository.findById(eventoId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Evento no encontrado"
-                        ));
+                .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
+
+
+        if (!LocalDateTime.now().isBefore(evento.getFechaInicio())) {
+            throw new RuntimeException("La generación de códigos QR ha finalizado porque el evento ya inició.");
+        }
 
         Optional<QrToken> qrActivo =
                 qrTokenRepository.findQrActivoPorUsuario(usuarioId, eventoId);

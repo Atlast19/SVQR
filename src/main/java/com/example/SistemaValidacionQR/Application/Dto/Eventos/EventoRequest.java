@@ -28,8 +28,7 @@ public class EventoRequest {
             message = "La descripción no puede exceder los 500 caracteres")
     private String descripcion;
 
-    @Size(max = 700,
-            message = "La ruta de la imagen no puede exceder los 700 caracteres")
+
     private String imagen;
 
     @NotNull(message = "La fecha de inicio es obligatoria")

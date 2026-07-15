@@ -42,9 +42,6 @@ public class Evento {
     @Column(name = "Descripcion", nullable = false, length = 500)
     private String descripcion;
 
-    @Size(max = 700,
-            message = "La imagen no puede exceder los 700 caracteres")
-    @Column(name = "Imagen", length = 700)
     private String imagen;
 
     @NotNull(message = "La fecha de inicio es obligatoria")
